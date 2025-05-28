@@ -1,0 +1,29 @@
+services:
+  chroma:
+    image: ghcr.io/chroma-core/chroma:1.0.0
+    container_name: chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chroma_data:/chroma/chroma
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_MODELS=/root/.ollama/models
+    restart: unless-stopped
+#    command: >
+#      sh -c "
+#        ollama serve &
+#        sleep 10 &&
+#        ollama pull llama3.2 &&
+#        ollama pull mxbai-embed-large &&
+#        wait
+#      "

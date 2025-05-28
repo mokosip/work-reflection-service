@@ -21,8 +21,12 @@ public class VectorStoreConfig {
   }
 
   @Bean
-  public ChromaApi chromaApi(RestClient.Builder restClientBuilder) {
-    String chromaUrl = "http://localhost:8000";
+  public ChromaApi chromaApi(
+      RestClient.Builder restClientBuilder,
+      @org.springframework.beans.factory.annotation.Value(
+              "${spring.ai.vectorstore.chroma.base-url:http://localhost:8000}")
+          String chromaUrl) {
+    System.out.println("Connecting to Chroma at: " + chromaUrl);
     return new ChromaApi(chromaUrl, restClientBuilder, objectMapper);
   }
 

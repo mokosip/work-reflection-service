@@ -1,8 +1,11 @@
-package de.sipgate.konschack.work_reflection_service.aiCore.tmp;
+package de.sipgate.konschack.work_reflection_service.aiCore;
 
 import java.util.List;
+
+import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +17,7 @@ public class AiChatClient {
           + "Provide clear, concise responses in a structured format (use bulletpoints where applicable).";
   private final OllamaApi ollamaApi;
   private final String model;
+  @Autowired private OllamaChatModel chatModel;
 
   public AiChatClient(
       OllamaApi ollamaApi, @Value("${spring.ai.ollama.model:mistral}") String model) {

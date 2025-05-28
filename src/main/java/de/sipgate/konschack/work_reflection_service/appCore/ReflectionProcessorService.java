@@ -7,7 +7,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import de.sipgate.konschack.work_reflection_service.aiCore.tmp.AiChatClient;
+import de.sipgate.konschack.work_reflection_service.aiCore.AiChatClient;
 
 @Service
 public class ReflectionProcessorService {

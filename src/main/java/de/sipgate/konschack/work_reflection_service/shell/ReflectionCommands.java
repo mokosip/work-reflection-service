@@ -1,14 +1,16 @@
 package de.sipgate.konschack.work_reflection_service.shell;
 
-import de.sipgate.konschack.work_reflection_service.appCore.ReflectionProcessorService;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+
+import de.sipgate.konschack.work_reflection_service.appCore.ReflectionProcessorService;
 
 /**
  * Command-line interface for the Work Reflection Service. Provides commands for recording and
