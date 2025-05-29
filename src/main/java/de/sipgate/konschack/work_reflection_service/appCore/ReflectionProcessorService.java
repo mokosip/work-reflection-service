@@ -7,24 +7,29 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
+import de.sipgate.konschack.work_reflection_service.aiCore.MyChatClient;
+
 @Service
 public class ReflectionProcessorService {
   final de.sipgate.konschack.work_reflection_service.aiCore.OllamaApiClient ollamaApiClient;
+  final MyChatClient chatClient;
   final VectorStore vectorStore;
 
   public ReflectionProcessorService(
       de.sipgate.konschack.work_reflection_service.aiCore.OllamaApiClient ollamaApiClient,
+      MyChatClient chatClient,
       VectorStore vectorStore) {
     this.ollamaApiClient = ollamaApiClient;
+    this.chatClient = chatClient;
     this.vectorStore = vectorStore;
   }
 
   public String process(String input) {
     System.out.println("Processing " + input);
-    String reflection = ollamaApiClient.chat(input);
-    Document document = new Document(reflection);
-    vectorStore.add(List.of(document));
-    return reflection;
+    return chatClient.chat(input);
+    //    String reflection = ollamaApiClient.chat(input);
+    //    Document document = new Document(reflection);
+    //    vectorStore.add(List.of(document));
   }
 
   private void testVectorStore() {
