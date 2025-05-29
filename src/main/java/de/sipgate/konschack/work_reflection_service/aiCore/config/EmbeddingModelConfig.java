@@ -23,11 +23,4 @@ public class EmbeddingModelConfig {
         ObservationRegistry.create(),
         ModelManagementOptions.builder().build());
   }
-
-  //    @Bean
-  //    public EmbeddingModel embeddingModel() {
-  //        // Can be any other EmbeddingModel implementation.
-  //        return new
-  // OpenAiEmbeddingModel(OpenAiApi.builder().apiKey(System.getenv("OPENAI_API_KEY")).build());
-  //    }
 }

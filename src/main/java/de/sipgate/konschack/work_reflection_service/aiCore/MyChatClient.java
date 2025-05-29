@@ -13,12 +13,6 @@ public class MyChatClient {
   }
 
   public String chat(String message) {
-    ChatClient.ChatClientRequestSpec prompt = chatClient.prompt(message);
-    System.out.println(prompt);
-    ChatClient.CallResponseSpec call = prompt.call();
-    System.out.println(call);
-    String content = call.content();
-    System.out.println(content);
-    return content;
+    return chatClient.prompt(message).call().content();
   }
 }
