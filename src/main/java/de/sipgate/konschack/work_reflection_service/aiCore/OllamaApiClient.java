@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AiChatClient {
+public class OllamaApiClient {
   public static final String USER_PROMPT =
       "You are a helpful assistant. Your ta sk is to summarize all key learnings of the users current work day. "
           + "Emphasize on personal takeaways, do not ever come up with new information. If there is not a lot of information, return a few questions."
@@ -19,7 +19,7 @@ public class AiChatClient {
   private final String model;
   @Autowired private OllamaChatModel chatModel;
 
-  public AiChatClient(
+  public OllamaApiClient(
       OllamaApi ollamaApi, @Value("${spring.ai.ollama.model:mistral}") String model) {
     this.ollamaApi = ollamaApi;
     this.model = model;

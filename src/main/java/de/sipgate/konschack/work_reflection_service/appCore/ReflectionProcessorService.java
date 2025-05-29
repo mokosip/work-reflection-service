@@ -1,4 +1,4 @@
-package main.java.de.sipgate.konschack.work_reflection_service.appCore;
+package de.sipgate.konschack.work_reflection_service.appCore;
 
 import java.util.List;
 import java.util.Map;
@@ -7,14 +7,14 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import de.sipgate.konschack.work_reflection_service.aiCore.AiChatClient;
-
 @Service
 public class ReflectionProcessorService {
   final de.sipgate.konschack.work_reflection_service.aiCore.OllamaApiClient ollamaApiClient;
   final VectorStore vectorStore;
 
-  public ReflectionProcessorService(de.sipgate.konschack.work_reflection_service.aiCore.OllamaApiClient ollamaApiClient, VectorStore vectorStore) {
+  public ReflectionProcessorService(
+      de.sipgate.konschack.work_reflection_service.aiCore.OllamaApiClient ollamaApiClient,
+      VectorStore vectorStore) {
     this.ollamaApiClient = ollamaApiClient;
     this.vectorStore = vectorStore;
   }
