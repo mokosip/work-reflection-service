@@ -1,4 +1,4 @@
-package de.sipgate.konschack.work_reflection_service.appCore;
+package main.java.de.sipgate.konschack.work_reflection_service.appCore;
 
 import java.util.List;
 import java.util.Map;
@@ -11,17 +11,17 @@ import de.sipgate.konschack.work_reflection_service.aiCore.AiChatClient;
 
 @Service
 public class ReflectionProcessorService {
-  final AiChatClient aiChatClient;
+  final de.sipgate.konschack.work_reflection_service.aiCore.OllamaApiClient ollamaApiClient;
   final VectorStore vectorStore;
 
-  public ReflectionProcessorService(AiChatClient aiChatClient, VectorStore vectorStore) {
-    this.aiChatClient = aiChatClient;
+  public ReflectionProcessorService(de.sipgate.konschack.work_reflection_service.aiCore.OllamaApiClient ollamaApiClient, VectorStore vectorStore) {
+    this.ollamaApiClient = ollamaApiClient;
     this.vectorStore = vectorStore;
   }
 
   public String process(String input) {
     System.out.println("Processing " + input);
-    String reflection = aiChatClient.chat(input);
+    String reflection = ollamaApiClient.chat(input);
     Document document = new Document(reflection);
     vectorStore.add(List.of(document));
     return reflection;
