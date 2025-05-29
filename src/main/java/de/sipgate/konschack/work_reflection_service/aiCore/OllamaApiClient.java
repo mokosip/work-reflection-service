@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OllamaApiClient {
-  public static final String USER_PROMPT =
+  public static final String SYSTEM_PROMPT =
       "You are a helpful assistant. Your ta sk is to summarize all key learnings of the users current work day. "
           + "Emphasize on personal takeaways, do not ever come up with new information. If there is not a lot of information, return a few questions."
           + "Provide clear, concise responses in a structured format (use bulletpoints where applicable).";
@@ -29,7 +29,7 @@ public class OllamaApiClient {
     List<OllamaApi.Message> messages =
         List.of(
             // System message to set the context and behavior
-            OllamaApi.Message.builder(OllamaApi.Message.Role.SYSTEM).content(USER_PROMPT).build(),
+            OllamaApi.Message.builder(OllamaApi.Message.Role.SYSTEM).content(SYSTEM_PROMPT).build(),
             // User's actual prompt
             OllamaApi.Message.builder(OllamaApi.Message.Role.USER).content(prompt).build());
 
