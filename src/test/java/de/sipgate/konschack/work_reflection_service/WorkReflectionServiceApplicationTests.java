@@ -5,11 +5,13 @@
 // import org.springframework.boot.test.context.SpringBootTest;
 //
 // @SpringBootTest(classes = WorkReflectionServiceApplicationTests.TestApplication.class)
-// class WorkReflectionServiceApplicationTests {
+// public class WorkReflectionServiceApplicationTests {
 //
 //  @Test
-//  void contextLoads() {}
+//  public void contextLoads() {
+//    /* TODO document why this method is empty */
+//  }
 //
-//  @SpringBootApplication(scanBasePackages = "de.sipgate.konschack.work_reflection_service.shell")
+//  @SpringBootApplication(scanBasePackages = "de.sipgate.konschack.work_reflection_service")
 //  static class TestApplication {}
 // }

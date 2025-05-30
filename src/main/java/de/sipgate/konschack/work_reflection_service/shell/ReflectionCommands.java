@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.sipgate.konschack.work_reflection_service.aiCore.Reflection;
+import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPrompt;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -42,6 +44,7 @@ public class ReflectionCommands {
     }
 
     reflections.put(reflectionDate, reflection);
+    reflectionProcessorService.register(reflection);
     return "Reflection added for " + reflectionDate.format(dateFormatter);
   }
 
@@ -53,20 +56,23 @@ public class ReflectionCommands {
     LocalDate reflectionDate =
         date.isEmpty() ? LocalDate.now() : LocalDate.parse(date, dateFormatter);
 
-    String input = reflections.get(reflectionDate);
-    if (input == null) {
+    String inputReflection = reflections.get(reflectionDate);
+    String reflection = reflectionProcessorService.getReflection(reflectionDate);
+    if (inputReflection == null) {
       return "No reflection found for " + reflectionDate.format(dateFormatter);
     }
-    String processedReflection = reflectionProcessorService.process(input);
+    ReflectionPrompt inputPrompt =
+        new ReflectionPrompt(reflectionDate, reflections.get(reflectionDate));
+    Reflection processedReflection = reflectionProcessorService.process(inputPrompt);
     System.out.println(processedReflection);
 
-    return "Reflection for " + reflectionDate.format(dateFormatter) + ":\n" + input;
+    return "Reflection for " + reflectionDate.format(dateFormatter) + ":\n" + inputReflection;
   }
 
-  @ShellMethod(key = "list", value = "List all reflection dates")
+  @ShellMethod(key = "list", value = "List all content dates")
   public String listReflections() {
     if (reflections.isEmpty()) {
-      return "No reflections recorded yet.";
+      return "No local/ in memory reflections recorded yet.";
     }
 
     StringBuilder result = new StringBuilder("Recorded reflections:\n");
