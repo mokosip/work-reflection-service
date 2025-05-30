@@ -8,6 +8,7 @@ A simple command-line interface for recording and retrieving daily work reflecti
 - Retrieve past reflections by date
 - List all recorded reflection dates
 - Command history and tab completion
+- Export reflections to markdown files
 
 ## Prerequisites
 
@@ -150,7 +151,8 @@ docker compose stop ollama
 
 #### Connecting to Chroma Vector Database
 
-When running the Chroma vector database in Docker Desktop, you need to configure the application to connect to it properly:
+When running the Chroma vector database in Docker Desktop, you need to configure the application to connect to it
+properly:
 
 1. Edit the `application.properties` file and set the Chroma base URL:
    ```properties
@@ -165,7 +167,8 @@ When running the Chroma vector database in Docker Desktop, you need to configure
 
 #### Connecting to Ollama
 
-Similarly, when running the Ollama container in Docker Desktop, you need to configure the application to connect to it properly:
+Similarly, when running the Ollama container in Docker Desktop, you need to configure the application to connect to it
+properly:
 
 1. Edit the `application.properties` file and set the Ollama base URL:
    ```properties
@@ -182,9 +185,22 @@ The difference is due to how Docker Desktop networking works. When running a con
 refers to the container itself, not your host machine. Using "host.docker.internal" allows the container to access
 services running on your host machine.
 
+## Markdown Export
+
+When you add a reflection, it is automatically exported to a markdown (.md) file in the `reflections` directory. The files are named using the format `reflection-YYYY-MM-DD.md` (e.g., `reflection-2023-06-15.md`).
+
+Each markdown file includes:
+- A header with the reflection date
+- The full content of your reflection
+
+This feature makes it easy to:
+- View your reflections in any markdown editor
+- Include your reflections in documentation
+- Share your reflections with others
+
 ## Future Enhancements
 
 - Persistent storage (database integration)
-- Export reflections to various formats (PDF, CSV)
+- Export reflections to additional formats (PDF, CSV)
 - Search functionality
 - Tags and categorization

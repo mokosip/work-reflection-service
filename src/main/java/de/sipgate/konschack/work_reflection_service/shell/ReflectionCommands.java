@@ -1,8 +1,6 @@
 package de.sipgate.konschack.work_reflection_service.shell;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.shell.standard.ShellComponent;
