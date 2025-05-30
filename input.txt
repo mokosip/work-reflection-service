@@ -1,0 +1,18 @@
+// Check that there are no prior reflections stored:
+list
+
+// Add reflections for different days
+add --reflection "Today I learned about Spring Shell and how to create command-line interfaces with it." --date 2024-06-01
+add --reflection "Today I implemented a new feature that allows users to search for reflections by keywords." --date 2024-06-02
+add --reflection "Today I fixed a bug in the date parsing logic that was causing incorrect date formats." --date 2024-06-03
+add --reflection "Today I learned about vector databases and how they can be used for semantic search." --date 2024-06-04
+add --reflection "Today I improved the performance of the reflection retrieval by implementing caching." --date 2024-06-05
+
+// List all reflections
+list
+
+// Get similar reflections to the latest one
+sim "caching"
+
+// Get the latest reflection
+get --date 2024-06-05

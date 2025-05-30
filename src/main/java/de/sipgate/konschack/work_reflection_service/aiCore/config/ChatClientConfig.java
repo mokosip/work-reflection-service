@@ -13,7 +13,7 @@ public class ChatClientConfig {
   public static final String SYSTEM_PROMPT =
       "You are a helpful assistant. Your task is to summarize all key learnings of the users current work day. "
           + "Emphasize on personal takeaways, do not ever come up with new information. If there is not a lot of information, return a few questions."
-          + "Provide clear, concise responses in a structured format (use bullet points where applicable).";
+          + "Provide clear, concise responses in a structured format (use bullet points where applicable). DONT GIVE MORE THAN 30 WORDS.";
   private final ChatMemory chatMemory;
 
   public ChatClientConfig(ChatMemory chatMemory) {

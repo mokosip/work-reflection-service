@@ -178,7 +178,9 @@ Similarly, when running the Ollama container in Docker Desktop, you need to conf
    spring.ai.ollama.base-url=http://localhost:11434
    ```
 
-The difference is due to how Docker Desktop networking works. When running a container in Docker Desktop, "localhost" refers to the container itself, not your host machine. Using "host.docker.internal" allows the container to access services running on your host machine.
+The difference is due to how Docker Desktop networking works. When running a container in Docker Desktop, "localhost"
+refers to the container itself, not your host machine. Using "host.docker.internal" allows the container to access
+services running on your host machine.
 
 ## Future Enhancements
 

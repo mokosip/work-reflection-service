@@ -2,18 +2,16 @@ package de.sipgate.konschack.work_reflection_service.shell;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import de.sipgate.konschack.work_reflection_service.appCore.domain.Reflection;
-import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPrompt;
-import org.springframework.ai.document.Document;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import de.sipgate.konschack.work_reflection_service.appCore.ReflectionProcessorService;
+import de.sipgate.konschack.work_reflection_service.appCore.domain.Reflection;
+import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPrompt;
 
 /**
  * Command-line interface for the Work Reflection Service. Provides commands for recording and
@@ -21,10 +19,6 @@ import de.sipgate.konschack.work_reflection_service.appCore.ReflectionProcessorS
  */
 @ShellComponent
 public class ReflectionCommands {
-
-  // Simple in-memory storage for reflections (in a real app, this would be a database)
-  private final Map<LocalDate, String> reflections = new HashMap<>();
-  private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yy");
   private final ReflectionProcessorService reflectionProcessorService;
 
   public ReflectionCommands(ReflectionProcessorService reflectionProcessorService) {
@@ -35,74 +29,57 @@ public class ReflectionCommands {
   public String addReflection(
       @ShellOption(help = "Your reflection text", defaultValue = "") String reflection,
       @ShellOption(help = "Date in format DD-MM-YY (defaults to today)", defaultValue = "")
-          String date) {
+          LocalDate date) {
 
-    LocalDate reflectionDate =
-        date.isEmpty() ? LocalDate.now() : LocalDate.parse(date, dateFormatter);
+    LocalDate reflectionDate = date == null ? LocalDate.now() : date;
 
     if (reflection.isEmpty()) {
       return "Reflection text cannot be empty. Please provide some text.";
     }
 
-    reflections.put(reflectionDate, reflection);
-    reflectionProcessorService.register(reflection);
-    return "Reflection added for " + reflectionDate.format(dateFormatter);
+    ReflectionPrompt inputPrompt = new ReflectionPrompt(reflectionDate, reflection);
+    Reflection processedReflection = reflectionProcessorService.process(inputPrompt);
+    return "Reflection added for " + reflectionDate;
   }
 
   @ShellMethod(key = "get", value = "Get a reflection for a specific date")
   public String getReflection(
-      @ShellOption(help = "Date in format DD-MM-YY (defaults to today)", defaultValue = "")
-          String date) {
+      @ShellOption(help = "Date in format YY-MM-DD (defaults to today)", defaultValue = "")
+          LocalDate date) {
+    LocalDate reflectionDate = date == null ? LocalDate.now() : date;
+    Reflection reflectionForDate = reflectionProcessorService.getReflectionForDate(reflectionDate);
 
-    LocalDate reflectionDate =
-        date.isEmpty() ? LocalDate.now() : LocalDate.parse(date, dateFormatter);
-
-    String input = reflections.get(reflectionDate);
-    String reflection = reflectionProcessorService.getReflection(reflectionDate);
-    System.out.println("TRYING TO FETCH REFLECTION FOR " + reflectionDate + ": " + reflection);
-    if (input == null || reflection == null) {
-      return "No reflection found for " + reflectionDate.format(dateFormatter);
-    }
-    ReflectionPrompt inputPrompt =
-        new ReflectionPrompt(reflectionDate, reflections.get(reflectionDate));
-    Reflection processedReflection = reflectionProcessorService.process(inputPrompt);
-    System.out.println(processedReflection);
-
-    return "Reflection for " + reflectionDate.format(dateFormatter) + ":\n" + input;
+    return "Reflection for "
+        + reflectionDate
+        + " found actual reflection with date: "
+        + reflectionForDate.date()
+        + ":\n"
+        + reflectionForDate.content();
   }
 
-  @ShellMethod(key = "list", value = "List all content dates")
-  public String listReflections() {
-    System.out.println("LISTING ALL REFLECTIONS BY * QUERY" + reflectionProcessorService.getAll());
-    List<Document> reflections = reflectionProcessorService.getTodaysReflection();
-    //    if (reflections.isEmpty()) {
-    //      return "No local/ in memory reflections recorded yet.";
-    //    }
-    //
-    //
-    //    StringBuilder result = new StringBuilder("Recorded reflections:\n");
-    //
-    //    reflections.stream()
-    //        .sorted()
-    //        .forEach(doc -> result.append("- ").append(doc.getText()).append("\n"));
-    //
-    //    return result.toString();
-    return "";
+  @ShellMethod(key = "list", value = "List all reflection dates")
+  public String listReflections(
+      @ShellOption(
+              help = "Indicates whether to list all reflections after a certain date",
+              defaultValue = "")
+          LocalDate after) {
+    List<Reflection> reflections =
+        after != null
+            ? reflectionProcessorService.getReflectionsAfterDate(after)
+            : reflectionProcessorService.getAll();
+    List<String> recordedDates = reflections.stream().map(ref -> ref.date().toString()).toList();
+    StringBuilder result = new StringBuilder("Recorded reflections:\n");
+    recordedDates.forEach(date -> result.append("- ").append(date).append("\n"));
+    return result.toString();
   }
 
   @ShellMethod(key = "sim", value = "Find all similar reflections")
   public String listSimilarReflections(
       @ShellOption(help = "keyword you want to search for", defaultValue = "") String keyword) {
 
-    if (reflections.isEmpty()) {
-      return "No reflections recorded yet.";
-    }
-
     StringBuilder result = new StringBuilder("Similar reflections:\n");
-    List<String> allReflections = reflectionProcessorService.findSimilar(keyword);
-
-    allReflections.stream().sorted().forEach(text -> result.append("- ").append(text).append("\n"));
-
+    List<Reflection> allReflections = reflectionProcessorService.findSimilar(keyword);
+    allReflections.forEach(text -> result.append("- ").append(text).append("\n"));
     return result.toString();
   }
 

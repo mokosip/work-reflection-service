@@ -4,19 +4,21 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import de.sipgate.konschack.work_reflection_service.appCore.domain.Reflection;
-import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPrompt;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.stereotype.Service;
 
 import de.sipgate.konschack.work_reflection_service.aiCore.MyChatClient;
+import de.sipgate.konschack.work_reflection_service.appCore.domain.Reflection;
+import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPrompt;
 
 @Service
 public class ReflectionProcessorService {
   final MyChatClient chatClient;
-
   final VectorStore vectorStore;
 
   public ReflectionProcessorService(MyChatClient chatClient, VectorStore vectorStore) {
@@ -28,36 +30,65 @@ public class ReflectionProcessorService {
     System.out.println("Processing " + inputPrompt);
     Reflection reflection = chatClient.chat(inputPrompt);
     persist(reflection);
-    //    Map<String, Object> metadata = Map.of("date", String.valueOf(inputPrompt.date()));
-    //    vectorStore.add(List.of(new Document(reflection., metadata)));
     return reflection;
   }
 
-  public List<String> findSimilar(String keyword) {
+  public List<Reflection> findSimilar(String keyword) {
     System.out.println("#### similiarity search, disabled for now #### ' + keyword: " + keyword);
-    return Collections.emptyList();
-    //    return vectorStore.similaritySearch(keyword).stream().map(Document::toString).toList();
+    SearchRequest searchRequest =
+        SearchRequest.builder().query(keyword).topK(5).similarityThreshold(0.55).build();
+    return Objects.requireNonNull(vectorStore.similaritySearch(searchRequest)).stream()
+        .map(
+            doc ->
+                new Reflection(
+                    LocalDate.parse(doc.getMetadata().get("date").toString()), doc.getText()))
+        .toList();
   }
 
-  public void register(String reflection) {
-    System.out.println("#### REGISTER " + reflection);
-    vectorStore.add(List.of(new Document(reflection)));
+  public Reflection getReflectionForDate(LocalDate reflectionDate) {
+    FilterExpressionBuilder b = new FilterExpressionBuilder();
+    SearchRequest searchRequest =
+        SearchRequest.builder()
+            .filterExpression(b.eq("date", reflectionDate.toString()).build())
+            .topK(1)
+            .build();
+
+    return new Reflection(
+        reflectionDate, vectorStore.similaritySearch(searchRequest).getFirst().getText());
   }
 
-  public String getReflection(LocalDate reflectionDate) {
-    return vectorStore.similaritySearch(reflectionDate.toString()).getFirst().getText();
+  // TODO: FIX, GTE not working
+  public List<Reflection> getReflectionsAfterDate(LocalDate reflectionDate) {
+    FilterExpressionBuilder b = new FilterExpressionBuilder();
+    SearchRequest searchRequest =
+        SearchRequest.builder()
+            .filterExpression(b.eq("date", reflectionDate.toString()).build())
+            .topK(100)
+            .build();
+
+    return Objects.requireNonNull(vectorStore.similaritySearch(searchRequest)).stream()
+        .map(
+            doc ->
+                new Reflection(
+                    LocalDate.parse(doc.getMetadata().get("date").toString()), doc.getText()))
+        .toList();
   }
 
-  public List<Document> getTodaysReflection() {
-    return vectorStore.similaritySearch(LocalDate.now().toString());
+  public Reflection getTodaysReflection() {
+    return getReflectionForDate(LocalDate.now());
   }
 
-  public List<Document> getAll() {
-    return vectorStore.similaritySearch("*");
+  public List<Reflection> getAll() {
+    return Objects.requireNonNull(vectorStore.similaritySearch("*")).stream()
+        .map(
+            doc ->
+                new Reflection(
+                    LocalDate.parse(doc.getMetadata().get("date").toString()), doc.getText()))
+        .toList();
   }
 
   private void persist(Reflection reflection) {
-    System.out.println("#### PERSIST REFLECTION RESULT FOR DATE ####" + reflection.date());
+    System.out.println("#### PERSIST REFLECTION RESULT FOR DATE #### " + reflection.date());
     Map<String, Object> metadata = Map.of("date", reflection.date().toString());
     vectorStore.add(
         Collections.singletonList(
