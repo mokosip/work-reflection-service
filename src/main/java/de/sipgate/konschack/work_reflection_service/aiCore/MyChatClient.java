@@ -3,6 +3,7 @@ package de.sipgate.konschack.work_reflection_service.aiCore;
 import java.util.Collections;
 import java.util.Map;
 
+import de.sipgate.konschack.work_reflection_service.appCore.domain.Reflection;
 import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPrompt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,17 +35,8 @@ public class MyChatClient {
                     // .searchRequest(SearchRequest.builder().filterExpression("filterExpr").build())
                     .build());
     System.out.println("#### REQUEST with QA-ADVISOR: ####");
-    System.out.println(request.call().chatClientResponse());
+    System.out.println(request.call().chatClientResponse().chatResponse());
     Reflection reflection = new Reflection(prompt.date(), request.call().content());
-    persist(reflection);
     return reflection;
-  }
-
-  private void persist(Reflection reflection) {
-    System.out.println("#### PERSIST REFLECTION RESULT FOR DATE ####" + reflection.date());
-    Map<String, Object> metadata = Map.of("date", reflection.date());
-    simpleVectorStore.add(
-        Collections.singletonList(
-            Document.builder().text(reflection.content()).metadata(metadata).build()));
   }
 }

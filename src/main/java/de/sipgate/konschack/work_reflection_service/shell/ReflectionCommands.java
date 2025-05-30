@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.sipgate.konschack.work_reflection_service.aiCore.Reflection;
+import de.sipgate.konschack.work_reflection_service.appCore.domain.Reflection;
 import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPrompt;
+import org.springframework.ai.document.Document;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -56,9 +57,10 @@ public class ReflectionCommands {
     LocalDate reflectionDate =
         date.isEmpty() ? LocalDate.now() : LocalDate.parse(date, dateFormatter);
 
-    String inputReflection = reflections.get(reflectionDate);
+    String input = reflections.get(reflectionDate);
     String reflection = reflectionProcessorService.getReflection(reflectionDate);
-    if (inputReflection == null) {
+    System.out.println("TRYING TO FETCH REFLECTION FOR " + reflectionDate + ": " + reflection);
+    if (input == null || reflection == null) {
       return "No reflection found for " + reflectionDate.format(dateFormatter);
     }
     ReflectionPrompt inputPrompt =
@@ -66,22 +68,26 @@ public class ReflectionCommands {
     Reflection processedReflection = reflectionProcessorService.process(inputPrompt);
     System.out.println(processedReflection);
 
-    return "Reflection for " + reflectionDate.format(dateFormatter) + ":\n" + inputReflection;
+    return "Reflection for " + reflectionDate.format(dateFormatter) + ":\n" + input;
   }
 
   @ShellMethod(key = "list", value = "List all content dates")
   public String listReflections() {
-    if (reflections.isEmpty()) {
-      return "No local/ in memory reflections recorded yet.";
-    }
-
-    StringBuilder result = new StringBuilder("Recorded reflections:\n");
-
-    reflections.keySet().stream()
-        .sorted()
-        .forEach(date -> result.append("- ").append(date.format(dateFormatter)).append("\n"));
-
-    return result.toString();
+    System.out.println("LISTING ALL REFLECTIONS BY * QUERY" + reflectionProcessorService.getAll());
+    List<Document> reflections = reflectionProcessorService.getTodaysReflection();
+    //    if (reflections.isEmpty()) {
+    //      return "No local/ in memory reflections recorded yet.";
+    //    }
+    //
+    //
+    //    StringBuilder result = new StringBuilder("Recorded reflections:\n");
+    //
+    //    reflections.stream()
+    //        .sorted()
+    //        .forEach(doc -> result.append("- ").append(doc.getText()).append("\n"));
+    //
+    //    return result.toString();
+    return "";
   }
 
   @ShellMethod(key = "sim", value = "Find all similar reflections")
