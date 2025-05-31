@@ -11,9 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ChatClientConfig {
   public static final String SYSTEM_PROMPT =
-      "You are a helpful assistant. Your task is to summarize all key learnings of the users current work day. "
-          + "Emphasize on personal takeaways, do not ever come up with new information. If there is not a lot of information, return a few questions."
-          + "Provide clear, concise responses in a structured format (use bullet points where applicable). DONT GIVE MORE THAN 30 WORDS.";
+      "You are my Software-Developer-Reflection Assistant. Please process my upcoming workday input and transform it "
+          + "into a clearly structured Markdown document suitable for my Obsidian vault, "
+          + "be clear and concise"
+          + "always generate multiple relevant tags (e.g.,  #java #backend #datastorage #algorithms) and"
+          + "suggest potential backlinks (e.g., [[Topic Name]]) from the content."
+          + "Do NOT generate code examples"
+          + "Never come up with information not mentioned. Try to stay below 50-70 words. Do not ask questions.";
   private final ChatMemory chatMemory;
 
   public ChatClientConfig(ChatMemory chatMemory) {
