@@ -40,7 +40,6 @@ public class ReflectionProcessorService {
   }
 
   public List<Reflection> findSimilar(String keyword) {
-    System.out.println("#### similiarity search, disabled for now #### ' + keyword: " + keyword);
     SearchRequest searchRequest =
         SearchRequest.builder().query(keyword).topK(5).similarityThreshold(0.55).build();
     return Objects.requireNonNull(vectorStore.similaritySearch(searchRequest)).stream()
@@ -92,7 +91,6 @@ public class ReflectionProcessorService {
   }
 
   private void persist(Reflection reflection) {
-    System.out.println("#### PERSIST REFLECTION RESULT FOR DATE #### " + reflection.date());
     Map<String, Object> metadata = Map.of("date", reflection.date().toString());
     vectorStore.add(
         Collections.singletonList(
@@ -101,7 +99,6 @@ public class ReflectionProcessorService {
 
   private void writeToMarkdownFile(Reflection reflection) {
     try {
-      // Create reflections directory if it doesn't exist
       Path reflectionsDir = Paths.get("reflections");
       if (!Files.exists(reflectionsDir)) {
         Files.createDirectories(reflectionsDir);
