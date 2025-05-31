@@ -34,7 +34,6 @@ public class ReflectionProcessorService {
   public Reflection process(ReflectionPrompt inputPrompt) {
     System.out.println("Processing " + inputPrompt);
     Reflection reflection = chatClient.chat(inputPrompt);
-
     persist(reflection);
     writeToMarkdownFile(reflection);
     return reflection;
@@ -61,7 +60,8 @@ public class ReflectionProcessorService {
             .build();
 
     return new Reflection(
-        reflectionDate, vectorStore.similaritySearch(searchRequest).getFirst().getText());
+        reflectionDate,
+        Objects.requireNonNull(vectorStore.similaritySearch(searchRequest)).getFirst().getText());
   }
 
   // TODO: FIX, GTE not working
@@ -81,12 +81,9 @@ public class ReflectionProcessorService {
         .toList();
   }
 
-  public Reflection getTodaysReflection() {
-    return getReflectionForDate(LocalDate.now());
-  }
-
   public List<Reflection> getAll() {
-    return Objects.requireNonNull(vectorStore.similaritySearch("*")).stream()
+    SearchRequest searchRequest = SearchRequest.builder().similarityThreshold(0.0).topK(30).build();
+    return Objects.requireNonNull(vectorStore.similaritySearch(searchRequest)).stream()
         .map(
             doc ->
                 new Reflection(

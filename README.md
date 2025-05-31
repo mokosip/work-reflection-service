@@ -116,6 +116,7 @@ docker compose logs -f
 ```
 
 This will:
+
 1. Start the Chroma vector database container
 2. Start the Ollama container
 3. Automatically pull the required models for Ollama (llama3.2 and mxbai-embed-large)

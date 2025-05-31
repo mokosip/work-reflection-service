@@ -36,7 +36,7 @@ public class ReflectionCommands {
     }
 
     ReflectionPrompt inputPrompt = new ReflectionPrompt(reflectionDate, reflection);
-    Reflection processedReflection = reflectionProcessorService.process(inputPrompt);
+    reflectionProcessorService.process(inputPrompt);
     return "Reflection added for " + reflectionDate;
   }
 
@@ -77,7 +77,8 @@ public class ReflectionCommands {
 
     StringBuilder result = new StringBuilder("Similar reflections:\n");
     List<Reflection> allReflections = reflectionProcessorService.findSimilar(keyword);
-    allReflections.forEach(text -> result.append("- ").append(text).append("\n"));
+    allReflections.forEach(
+        reflection -> result.append("- ").append(reflection.date()).append("\n"));
     return result.toString();
   }
 
