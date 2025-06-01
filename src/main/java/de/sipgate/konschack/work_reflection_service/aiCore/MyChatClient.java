@@ -19,9 +19,9 @@ public class MyChatClient {
   ChatClient chatClient;
 
   public MyChatClient(
-      @Qualifier("ollamaChatClient") ChatClient chatClient, VectorStore simpleVectorStore) {
+      @Qualifier("ollamaChatClient") ChatClient chatClient, VectorStore vectorStore) {
     this.chatClient = chatClient;
-    this.simpleVectorStore = simpleVectorStore;
+    this.simpleVectorStore = vectorStore;
   }
 
   public Reflection chat(ReflectionPrompt prompt) {
@@ -31,7 +31,11 @@ public class MyChatClient {
             .advisors(
                 QuestionAnswerAdvisor.builder(simpleVectorStore)
                     .searchRequest(
-                        SearchRequest.builder().similarityThreshold(0.8d).topK(1).build())
+                        SearchRequest.builder()
+                            .query("Have I had this reflection before?")
+                            .similarityThreshold(0.8d)
+                            .topK(3)
+                            .build())
                     .build());
     return new Reflection(prompt.date(), request.call().content());
   }

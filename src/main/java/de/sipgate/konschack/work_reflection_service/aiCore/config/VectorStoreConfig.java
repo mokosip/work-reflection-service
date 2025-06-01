@@ -5,6 +5,7 @@ import org.springframework.ai.chroma.vectorstore.ChromaVectorStore;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -25,19 +26,21 @@ public class VectorStoreConfig {
   @Bean
   public ChromaApi chromaApi(
       RestClient.Builder restClientBuilder,
-      @org.springframework.beans.factory.annotation.Value(
-              "${spring.ai.vectorstore.chroma.base-url:http://localhost:8000}")
-          String chromaUrl) {
+      @Value("${spring.ai.vectorstore.chroma.base-url:http://localhost:8000}") String chromaUrl) {
     System.out.println("Connecting to Chroma at: " + chromaUrl);
     return new ChromaApi(chromaUrl, restClientBuilder, objectMapper);
   }
 
   @Bean
   @Primary
-  public VectorStore chromaVectorStore(EmbeddingModel embeddingModel, ChromaApi chromaApi) {
+  public VectorStore chromaVectorStore(
+      EmbeddingModel embeddingModel,
+      ChromaApi chromaApi,
+      @Value("${spring.ai.vectorstore.chroma.collection-name}") String collectionName) {
     System.out.println("EmbeddingModel: " + embeddingModel);
+    System.out.println("CollectionName: " + collectionName);
     return ChromaVectorStore.builder(chromaApi, embeddingModel)
-        .collectionName("TestCollection")
+        .collectionName(collectionName)
         .initializeSchema(true)
         .build();
   }

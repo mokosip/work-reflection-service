@@ -1,12 +1,14 @@
 package de.sipgate.konschack.work_reflection_service;
 
-import de.sipgate.konschack.work_reflection_service.appCore.ReflectionProcessorService;
+import de.sipgate.konschack.work_reflection_service.config.TestContainerConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+
+import de.sipgate.konschack.work_reflection_service.appCore.ReflectionProcessorService;
 
 @SpringBootTest
 @Import(TestContainerConfig.class)

@@ -15,6 +15,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import de.sipgate.konschack.work_reflection_service.aiCore.MyChatClient;
@@ -25,6 +26,9 @@ import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPro
 public class ReflectionProcessorService {
   final MyChatClient chatClient;
   final VectorStore vectorStore;
+
+  @Value("${output.filePath:./pathNotFound}") // Provide default value
+  String outputPath;
 
   public ReflectionProcessorService(MyChatClient chatClient, VectorStore vectorStore) {
     this.chatClient = chatClient;
@@ -99,7 +103,9 @@ public class ReflectionProcessorService {
 
   private void writeToMarkdownFile(Reflection reflection) {
     try {
-      Path reflectionsDir = Paths.get("reflections");
+      // Create reflections directory if it doesn't exist
+
+      Path reflectionsDir = Paths.get(outputPath);
       if (!Files.exists(reflectionsDir)) {
         Files.createDirectories(reflectionsDir);
       }

@@ -1,24 +1,17 @@
 package de.sipgate.konschack.work_reflection_service;
 
-import de.sipgate.konschack.work_reflection_service.appCore.ReflectionProcessorService;
-import de.sipgate.konschack.work_reflection_service.appCore.domain.Reflection;
-import de.sipgate.konschack.work_reflection_service.shell.ReflectionCommands;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.nio.file.Files;
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import static org.junit.jupiter.api.Assertions.*;
+import de.sipgate.konschack.work_reflection_service.appCore.ReflectionProcessorService;
+import de.sipgate.konschack.work_reflection_service.appCore.domain.Reflection;
+import de.sipgate.konschack.work_reflection_service.shell.ReflectionCommands;
 
 class ShellIntegrationTest extends IntegrationTestBase {
   @Autowired private ReflectionCommands reflectionCommands;
@@ -73,7 +66,6 @@ class ShellIntegrationTest extends IntegrationTestBase {
     // Arrange - Add a reflection first
     String reflectionText = "Test reflection for list command";
     String otherReflectionText = "Another test reflection for list command";
-    LocalDate otherDate = LocalDate.now().minusDays(1);
     reflectionCommands.addReflection(reflectionText, testDate);
     reflectionCommands.addReflection(otherReflectionText, otherDate);
 
