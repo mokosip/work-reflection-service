@@ -2,10 +2,8 @@ package de.sipgate.konschack.work_reflection_service.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.chromadb.ChromaDBContainer;
 import org.testcontainers.ollama.OllamaContainer;
 
@@ -19,8 +17,12 @@ public class TestContainerConfig {
 
   @DynamicPropertySource
   static void registerProperties(DynamicPropertyRegistry registry, ChromaDBContainer container) {
+    System.out.println(
+        "Dynamically registering ChromaDB container on port "
+            + container.getFirstMappedPort()
+            + "with endpoint "
+            + container.getEndpoint());
     registry.add("spring.ai.vectorstore.chroma.base-url", container::getEndpoint);
-    registry.add("spring.ai.vectorstore.chroma.collection-name", () -> "IntegrationTestCollection");
   }
 
   @Bean
