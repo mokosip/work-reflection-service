@@ -8,7 +8,6 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.template.st.StTemplateRenderer;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,7 +22,8 @@ public class ChatClientConfig {
           + "When similar past reflections are provided in the context, create markdown backlinks to them using the format [[reflection-YYYY-MM-DD]]. "
           + "Also suggest potential backlinks (e.g., [[Topic Name]]) from the content. "
           + "Do NOT generate code examples. "
-          + "Never come up with information not mentioned. Stay below 50-70 words. Do not ask questions.";
+          + "Never come up with information not mentioned. Stay below 50-70 words. Do not ask questions. "
+          + "Additionally check if the provided git commit history reveals anything about what might has been learned today.";
   private final ChatMemory chatMemory;
   private final VectorStore vectorStore;
 
