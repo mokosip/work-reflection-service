@@ -27,7 +27,7 @@ public class ReflectionProcessorService {
   final MyChatClient chatClient;
   final VectorStore vectorStore;
 
-  @Value("${output.filePath:./pathNotFound}") // Provide default value
+  @Value("${output.filePath:./pathNotFound}")
   String outputPath;
 
   public ReflectionProcessorService(MyChatClient chatClient, VectorStore vectorStore) {
