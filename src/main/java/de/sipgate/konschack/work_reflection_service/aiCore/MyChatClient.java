@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.template.st.StTemplateRenderer;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,28 +17,45 @@ import de.sipgate.konschack.work_reflection_service.appCore.domain.ReflectionPro
 @Component
 public class MyChatClient {
   private static final Logger log = LoggerFactory.getLogger(MyChatClient.class);
-  private final VectorStore simpleVectorStore;
+  private final VectorStore vectorStore;
+  private final PromptTemplate promptTemplate;
   ChatClient chatClient;
 
   public MyChatClient(
-      @Qualifier("ollamaChatClient") ChatClient chatClient, VectorStore vectorStore) {
+      @Qualifier("ollamaChatClient") ChatClient chatClient,
+      VectorStore vectorStore,
+      PromptTemplate promptTemplate) {
     this.chatClient = chatClient;
-    this.simpleVectorStore = vectorStore;
+    this.vectorStore = vectorStore;
+    this.promptTemplate = promptTemplate;
   }
 
-  public Reflection chat(ReflectionPrompt prompt) {
+  // TODO: refactor: using 3 LLM calls here...
+  public Reflection chat(ReflectionPrompt input) {
+    var initialLLMResponse = chatClient.prompt().user(input.prompt()).call().content();
+    assert initialLLMResponse != null;
+    var keywords =
+        chatClient
+            .prompt()
+            .system(
+                "Extract a concise, comma-separated list of the most relevant keywords from the following text. Give the answer only and no further information. If no keywords are found, return nothing.")
+            .user(initialLLMResponse)
+            .call()
+            .content();
+    assert keywords != null;
     ChatClient.ChatClientRequestSpec request =
         chatClient
-            .prompt(prompt.prompt())
+            .prompt()
+            // TODO: itemCount not really working.
+            .system(sp -> sp.param("itemCount", input.options().get("itemCount")))
+            .user(input.prompt())
             .advisors(
-                QuestionAnswerAdvisor.builder(simpleVectorStore)
+                QuestionAnswerAdvisor.builder(vectorStore)
+                    .promptTemplate(promptTemplate)
                     .searchRequest(
-                        SearchRequest.builder()
-                            .query("Have I had this reflection before?")
-                            .similarityThreshold(0.8d)
-                            .topK(3)
-                            .build())
+                        SearchRequest.builder().query(keywords).similarityThreshold(0.5).build())
                     .build());
-    return new Reflection(prompt.date(), request.call().content());
+
+    return new Reflection(input.date(), request.call().content());
   }
 }

@@ -88,9 +88,11 @@ public class ReflectionProcessorService {
     SearchRequest searchRequest = SearchRequest.builder().similarityThreshold(0.0).topK(30).build();
     return Objects.requireNonNull(vectorStore.similaritySearch(searchRequest)).stream()
         .map(
-            doc ->
-                new Reflection(
-                    LocalDate.parse(doc.getMetadata().get("date").toString()), doc.getText()))
+            doc -> {
+              Object date = doc.getMetadata().get("date");
+              LocalDate reflectionDate = date != null ? LocalDate.parse(date.toString()) : null;
+              return new Reflection(reflectionDate, doc.getText());
+            })
         .toList();
   }
 

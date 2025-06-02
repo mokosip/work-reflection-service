@@ -2,6 +2,7 @@ package de.sipgate.konschack.work_reflection_service.shell;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -35,7 +36,8 @@ public class ReflectionCommands {
       return "Reflection text cannot be empty. Please provide some text.";
     }
 
-    ReflectionPrompt inputPrompt = new ReflectionPrompt(reflectionDate, reflection);
+    ReflectionPrompt inputPrompt =
+        new ReflectionPrompt(reflectionDate, reflection, Map.of("itemCount", 10));
     reflectionProcessorService.process(inputPrompt);
     return "Reflection added for " + reflectionDate;
   }

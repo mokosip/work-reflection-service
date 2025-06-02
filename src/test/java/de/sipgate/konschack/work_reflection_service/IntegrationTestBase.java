@@ -36,7 +36,7 @@ public class IntegrationTestBase {
   @Value("${spring.ai.vectorstore.chroma.collection-name}")
   private String collectionName;
 
-  @Value("${output.filePath:./pathNotFound}") // Provide default value
+  @Value("${output.filePath:./pathNotFound}")
   String outputPath;
 
   Path reflectionsDir;
